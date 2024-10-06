@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WsTripsTogether.Model;
+using WsTripsTogether.Seeder;
 
 namespace WsTripsTogether;
 
@@ -24,12 +25,12 @@ public class Startup(WebApplicationBuilder builder)
         _ = app.UseEndpoints(x => x.MapControllers());
     }
 
-    private void ConfigureServices(IServiceCollection services)
+    private static void ConfigureServices(IServiceCollection services)
     {
-        // _ = services.AddScoped<>()
+        _ = services.AddScoped<DbInitializer>();
     }
 
-    private void ConfigureRepositories(IServiceCollection serices)
+    private static void ConfigureRepositories(IServiceCollection serices)
     {
         // _ = serices.AddScoped<>()
     }
@@ -42,5 +43,7 @@ public class Startup(WebApplicationBuilder builder)
         await using var serviceProvider = builder.Services.BuildServiceProvider();
         // Migrations
         await serviceProvider.GetRequiredService<Context>().Database.MigrateAsync();
+        // Initialize DB with first data
+        await serviceProvider.GetRequiredService<DbInitializer>().InitDb();
     }
 }
