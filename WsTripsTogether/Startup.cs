@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WsTripsTogether.Model;
+using WsTripsTogether.Repository.User;
 using WsTripsTogether.Seeder;
+using WsTripsTogether.Services.User;
 
 namespace WsTripsTogether;
 
@@ -10,6 +12,7 @@ public class Startup(WebApplicationBuilder builder)
     {
         _ = builder.Services.AddControllers();
 
+        builder.Services.AddAutoMapper(typeof(Startup));
         // Add services and repositories to container of dependency injection 
         ConfigureServices(builder.Services);
         ConfigureRepositories(builder.Services);
@@ -27,12 +30,13 @@ public class Startup(WebApplicationBuilder builder)
 
     private static void ConfigureServices(IServiceCollection services)
     {
-        _ = services.AddScoped<DbInitializer>();
+        _ = services.AddScoped<DbInitializer>()
+            .AddScoped<IUserService, UserService>();
     }
 
     private static void ConfigureRepositories(IServiceCollection serices)
     {
-        // _ = serices.AddScoped<>()
+        _ = serices.AddScoped<IUserRepository, UserRepository>();
     }
 
     private async Task ConfigureDb()
