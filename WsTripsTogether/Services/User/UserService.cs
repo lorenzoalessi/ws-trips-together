@@ -2,18 +2,21 @@
 using WsTripsTogether.Dto.User;
 using WsTripsTogether.Exceptions;
 using WsTripsTogether.Repository.User;
+using WsTripsTogether.Services.Login;
+using WsTripsTogether.Utils;
 
 namespace WsTripsTogether.Services.User;
 
-using Model;
-
-public class UserService(IMapper mapper, IUserRepository userRepository) : IUserService
+public class UserService(
+    IMapper mapper,
+    IUserRepository userRepository,
+    ILoginHandler loginHandler) : IUserService
 {
     public async Task<UserDto> AddAsync(UserDto userDto)
     {
-        var user = mapper.Map<User>(userDto);
+        var user = mapper.Map<Model.User>(userDto);
         await userRepository.AddAsync(user);
-        
+
         // Update dto ID with no other mapping
         userDto.Id = user.Id;
         return userDto;
@@ -25,8 +28,12 @@ public class UserService(IMapper mapper, IUserRepository userRepository) : IUser
         if (user == null)
             throw new UserException("User not found");
 
-        // TODO: token generation
+        var userDto = mapper.Map<UserDto>(user);
+        // Token generation
+        var token = JwtUtils.GenerateJwtToken(userDto);
         
-        return string.Empty;
+        loginHandler.Users.Add(new UserLogged(userDto, token));
+
+        return token;
     }
 }

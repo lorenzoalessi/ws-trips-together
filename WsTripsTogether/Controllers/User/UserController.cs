@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WsTripsTogether.Dto.User;
 using WsTripsTogether.Exceptions;
+using WsTripsTogether.Security;
 using WsTripsTogether.Services.User;
 
 namespace WsTripsTogether.Controllers.User;
@@ -27,5 +28,12 @@ public class UserController(IUserService userService) : BaseController
         {
             return StatusCode(400, "Request error");
         }
+    }
+
+    [HttpGet("ping")]
+    [Token]
+    public IActionResult Ping()
+    {
+        return Ok("pong");
     }
 }

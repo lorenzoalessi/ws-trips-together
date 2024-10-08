@@ -2,6 +2,7 @@
 using WsTripsTogether.Model;
 using WsTripsTogether.Repository.User;
 using WsTripsTogether.Seeder;
+using WsTripsTogether.Services.Login;
 using WsTripsTogether.Services.User;
 
 namespace WsTripsTogether;
@@ -30,13 +31,18 @@ public class Startup(WebApplicationBuilder builder)
 
     private static void ConfigureServices(IServiceCollection services)
     {
+        // Add repository to container dependency injection
         _ = services.AddScoped<DbInitializer>()
             .AddScoped<IUserService, UserService>();
+        
+        // Singleton
+        _ = services.AddSingleton<ILoginHandler, LoginHandler>();
     }
 
-    private static void ConfigureRepositories(IServiceCollection serices)
+    private static void ConfigureRepositories(IServiceCollection services)
     {
-        _ = serices.AddScoped<IUserRepository, UserRepository>();
+        // Add repository to container dependency injection
+        _ = services.AddScoped<IUserRepository, UserRepository>();
     }
 
     private async Task ConfigureDb()
